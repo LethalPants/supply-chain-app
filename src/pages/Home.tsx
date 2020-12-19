@@ -2,7 +2,7 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonIcon } from '@
 import React, { useState, useEffect , useRef} from 'react';
 import './Home.css';
 import { Loader } from "@googlemaps/js-api-loader"
-import { ellipse } from 'ionicons/icons';
+
 
 
 

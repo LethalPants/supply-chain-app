@@ -12,6 +12,7 @@ import { bulbOutline, barChartOutline } from 'ionicons/icons';
 import React from 'react';
 import { Route } from 'react-router-dom';
 import Home from '../../pages/Home';
+import Statistics from '../../pages/Statistics'
 
 
 const Layout: React.FC = () => (
@@ -19,14 +20,15 @@ const Layout: React.FC = () => (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
-          <Route path="/home" component={Home} exact={true} />
+          <Route path="/home/live" component={Home} exact={true} />
+          <Route path="/home/statistics" component={Statistics} exact={true} />
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/home">
+          <IonTabButton tab="tab1" href="/home/live">
             <IonIcon icon={bulbOutline} />
             <IonLabel>Live Tracking</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="tab2" href="/home">
+          <IonTabButton tab="tab2" href="/home/statistics">
             <IonIcon icon={barChartOutline} />
             <IonLabel>Statistics</IonLabel>
           </IonTabButton>
