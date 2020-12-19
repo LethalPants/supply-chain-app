@@ -2,6 +2,7 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonIcon } from '@
 import React, { useState, useEffect , useRef} from 'react';
 import './Home.css';
 import { Loader } from "@googlemaps/js-api-loader"
+import dummyvalues from '../constant/constant'
 
 
 
@@ -16,6 +17,62 @@ const Home: React.FC = () => {
     version: "weekly",
   });
 
+  function createInfoWindow ( supply:any, demand:any ) {
+    let contentString =
+    '<div id="content">' +
+    '<div id="siteNotice">' +
+    "</div>" +
+    '<h3 id="firstHeading" class="firstHeading ion-text-center">Status</h3>' +
+    '<div id="bodyContent">' +
+    '<p class="ion-text-center"><b>Demand: </b>' + demand +
+    "</p>" +
+    '<p class="ion-text-center"><b>Supply: </b>' + supply +
+    "</p>" +
+    "</div>" +
+    "</div>"; 
+
+    return contentString;
+  };
+  const markers:any = [];
+  const paths:any = [];
+  const infowindows:any = [];
+  const red_marker = 'https://storage.googleapis.com/support-kms-prod/SNP_2752125_en_v0';
+  const yellow_marker = 'https://storage.googleapis.com/support-kms-prod/SNP_2752063_en_v0';
+  const green_marker = 'https://storage.googleapis.com/support-kms-prod/SNP_2752129_en_v0';
+
+  function setAllStates( values:any ){
+    var i=0;
+    for(var value of values){
+      let demand = value.demand;
+      let supply = value.supply;
+      infowindows[i].setContent(createInfoWindow(supply, demand));
+      
+      if(Math.abs(demand - supply) > 0.4*demand){
+        markers[i].setIcon(red_marker);
+        if(i){
+          paths[i-1].setOptions({strokeColor: '#c62828'});
+          
+        }
+      }
+      else if(Math.abs(demand - supply) > 0.2*demand){
+        markers[i].setIcon(yellow_marker);
+        if(i){
+          paths[i-1].setOptions({strokeColor: '#FDD835'});
+
+        }
+      }
+      else{
+        markers[i].setIcon(green_marker);
+        if(i){
+          paths[i-1].setOptions({strokeColor: '#4CAF50'});
+        }
+      }
+      i++;
+    }
+
+
+  }
+
   
   const [map2, setState] = useState<any>();
   // Similar to componentDidMount and componentDidUpdate:
@@ -27,11 +84,6 @@ const Home: React.FC = () => {
         zoom: 8,
       })
       
-      const red_marker = 'https://storage.googleapis.com/support-kms-prod/SNP_2752125_en_v0';
-      const yellow_marker = 'https://storage.googleapis.com/support-kms-prod/SNP_2752063_en_v0';
-      const green_marker = 'https://storage.googleapis.com/support-kms-prod/SNP_2752129_en_v0';
-      
-
       // 25 coordinates for demo
       const Coordinates = [
         { lat: 18.967501304211517, lng: 72.82285520799007 },
@@ -84,612 +136,76 @@ const Home: React.FC = () => {
         { lat:26.513170026323,lng: 91.75874573106402},
         { lat:13.82613349921524,lng: 80.10263979435612}
 
-        
-
       ];
+      //individual paths for each node
+      const PathCoordinates = [
+        [Coordinates[0], Coordinates[1]],
+        [Coordinates[0], Coordinates[2]],[Coordinates[2], Coordinates[3]],
+        [Coordinates[1], Coordinates[4]],[Coordinates[2], Coordinates[5]],
+        [Coordinates[7], Coordinates[6]],[Coordinates[1], Coordinates[7]],
+        [Coordinates[1], Coordinates[8]],[Coordinates[0], Coordinates[9]],
+        [Coordinates[9], Coordinates[10]],[Coordinates[0], Coordinates[11]],
+        [Coordinates[0], Coordinates[12]],[Coordinates[0], Coordinates[13]],
+        [Coordinates[0], Coordinates[14]],[Coordinates[0], Coordinates[15]],
+        [Coordinates[14], Coordinates[16]],[Coordinates[0], Coordinates[17]],
+        [Coordinates[17], Coordinates[18]],[Coordinates[17], Coordinates[19]],
+        [Coordinates[17], Coordinates[20]],[Coordinates[19], Coordinates[21]],
+        [Coordinates[17], Coordinates[22]],[Coordinates[22], Coordinates[23]],
+        [Coordinates[36], Coordinates[24]],[Coordinates[22], Coordinates[25]],
+        [Coordinates[22], Coordinates[26]],[Coordinates[36], Coordinates[27]],
+        [Coordinates[29], Coordinates[28]],[Coordinates[0], Coordinates[29]],
+        [Coordinates[32], Coordinates[30]],[Coordinates[35], Coordinates[31]],
+        [Coordinates[1], Coordinates[32]],[Coordinates[28], Coordinates[33]],
+        [Coordinates[36], Coordinates[34]],[Coordinates[32], Coordinates[35]],
+        [Coordinates[18], Coordinates[36]],[Coordinates[25], Coordinates[37]],
+        [Coordinates[22], Coordinates[38]],[Coordinates[22], Coordinates[39]]
+
+      ]
+
+      //infowindows
+      for(let i=0;i<40;i++){
+        infowindows.push(new google.maps.InfoWindow({
+          content: createInfoWindow("20", "50")
+        }));
+      };
+
+      //new markers based on coordinates
+      for(let i=0;i<45;i++){
+        markers.push(new google.maps.Marker({
+          position: Coordinates[i],
+          icon: yellow_marker,
+          map: map
+        }))
+      };
 
       
-      
-      const marker1 = new google.maps.Marker({
-        position: Coordinates[0],
-        icon: yellow_marker,
-        map: map
-      });
-      const marker2 = new google.maps.Marker({
-        position: Coordinates[1],
-        icon: red_marker,
-        map: map
-      });
-      const marker3 = new google.maps.Marker({
-        position: Coordinates[2],
-        icon: green_marker,
-        map: map
-      });
-      const marker4 = new google.maps.Marker({
-        position: Coordinates[3],
-        icon: green_marker,
-        map: map
-      });
-      const marker5 = new google.maps.Marker({
-        position: Coordinates[4],
-        icon: green_marker,
-        map: map
-      });
-      const marker6 = new google.maps.Marker({
-        position: Coordinates[5],
-        icon: green_marker,
-        map: map
-      });
-      const marker7 = new google.maps.Marker({
-        position: Coordinates[6],
-        icon: green_marker,
-        map: map
-      });
-      const marker8 = new google.maps.Marker({
-        position: Coordinates[7],
-        icon: green_marker,
-        map: map
-      });
-      const marker9 = new google.maps.Marker({
-        position: Coordinates[8],
-        icon: green_marker,
-        map: map
-      });
-      const marker10 = new google.maps.Marker({
-        position: Coordinates[9],
-        icon: green_marker,
-        map: map
-      });
-      const marker11 = new google.maps.Marker({
-        position: Coordinates[10],
-        icon: green_marker,
-        map: map
-      });
-      const marker12 = new google.maps.Marker({
-        position: Coordinates[11],
-        icon: green_marker,
-        map: map
-      });
-      const marker13 = new google.maps.Marker({
-        position: Coordinates[12],
-        icon: green_marker,
-        map: map
-      });
-      const marker14 = new google.maps.Marker({
-        position: Coordinates[13],
-        icon: green_marker,
-        map: map
-      });
-      const marker15 = new google.maps.Marker({
-        position: Coordinates[14],
-        icon: green_marker,
-        map: map
-      });
-      const marker16 = new google.maps.Marker({
-        position: Coordinates[15],
-        icon: green_marker,
-        map: map
-      });
-      const marker17 = new google.maps.Marker({
-        position: Coordinates[16],
-        icon: green_marker,
-        map: map
-      });
-      const marker18 = new google.maps.Marker({
-        position: Coordinates[17],
-        icon: green_marker,
-        map: map
-      });
-      const marker19 = new google.maps.Marker({
-        position: Coordinates[18],
-        icon: green_marker,
-        map: map
-      });
-      const marker20 = new google.maps.Marker({
-        position: Coordinates[19],
-        icon: green_marker,
-        map: map
-      });
-      const marker21 = new google.maps.Marker({
-        position: Coordinates[20],
-        icon: green_marker,
-        map: map
-      });
-      const marker22 = new google.maps.Marker({
-        position: Coordinates[21],
-        icon: green_marker,
-        map: map
-      });
-      const marker23 = new google.maps.Marker({
-        position: Coordinates[22],
-        icon: green_marker,
-        map: map
-      });
-      const marker24 = new google.maps.Marker({
-        position: Coordinates[23],
-        icon: green_marker,
-        map: map
-      });
-      const marker25 = new google.maps.Marker({
-        position: Coordinates[24],
-        icon: green_marker,
-        map: map
-      });
-
-      const marker26 = new google.maps.Marker({
-        position: Coordinates[25],
-        icon: green_marker,
-        map: map
-      });
-      const marker27 = new google.maps.Marker({
-        position: Coordinates[26],
-        icon: green_marker,
-        map: map
-      });
-      const marker28 = new google.maps.Marker({
-        position: Coordinates[27],
-        icon: green_marker,
-        map: map
-      });
-      const marker29 = new google.maps.Marker({
-        position: Coordinates[28],
-        icon: green_marker,
-        map: map
-      });
-      const marker30 = new google.maps.Marker({
-        position: Coordinates[29],
-        icon: green_marker,
-        map: map
-      });
-      const marker31 = new google.maps.Marker({
-        position: Coordinates[30],
-        icon: green_marker,
-        map: map
-      });
-      const marker32 = new google.maps.Marker({
-        position: Coordinates[31],
-        icon: green_marker,
-        map: map
-      });
-      const marker33 = new google.maps.Marker({
-        position: Coordinates[32],
-        icon: green_marker,
-        map: map
-      });
-      const marker34 = new google.maps.Marker({
-        position: Coordinates[33],
-        icon: green_marker,
-        map: map
-      });
-      const marker35 = new google.maps.Marker({
-        position: Coordinates[34],
-        icon: green_marker,
-        map: map
-      });
-      const marker36 = new google.maps.Marker({
-        position: Coordinates[35],
-        icon: green_marker,
-        map: map
-      });
-      const marker37 = new google.maps.Marker({
-        position: Coordinates[36],
-        icon: green_marker,
-        map: map
-      });
-      const marker38 = new google.maps.Marker({
-        position: Coordinates[37],
-        icon: green_marker,
-        map: map
-      });
-      const marker39 = new google.maps.Marker({
-        position: Coordinates[38],
-        icon: green_marker,
-        map: map
-      });
-      const marker40 = new google.maps.Marker({
-        position: Coordinates[39],
-        icon: green_marker,
-        map: map
-      });
-      //extra gmsds
-      const marker41 = new google.maps.Marker({
-        position: Coordinates[40],
-        icon: green_marker,
-        map: map
-      });
-      const marker42 = new google.maps.Marker({
-        position: Coordinates[41],
-        icon: green_marker,
-        map: map
-      });
-      const marker43 = new google.maps.Marker({
-        position: Coordinates[42],
-        icon: green_marker,
-        map: map
-      });
-      const marker44 = new google.maps.Marker({
-        position: Coordinates[43],
-        icon: green_marker,
-        map: map
-      });
-      const marker45 = new google.maps.Marker({
-        position: Coordinates[44],
-        icon: green_marker,
-        map: map
-      });
-
+      //set info windows for each marker
+      for(let i=0;i<40;i++){
+        markers[i].addListener("click", () => {
+          infowindows[i].open(map, markers[i]);
+          
+        });
+      }
 
       //Paths to join vertexes
+      for(let i=0;i<39;i++){
+        paths.push(new google.maps.Polyline({
+          path: PathCoordinates[i],
+          geodesic: true,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+        }));
+      }
 
-      const path1 = new google.maps.Polyline({
-        path: [Coordinates[0], Coordinates[1]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
+      //setting paths on map
+      for (var path of paths) {
+        path.setMap(map);
+      }
 
-      const path2 = new google.maps.Polyline({
-        path: [Coordinates[0], Coordinates[2]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path3 = new google.maps.Polyline({
-        path: [Coordinates[2], Coordinates[3]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path4 = new google.maps.Polyline({
-        path: [Coordinates[1], Coordinates[4]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path5 = new google.maps.Polyline({
-        path: [Coordinates[2], Coordinates[5]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path6 = new google.maps.Polyline({
-        path: [Coordinates[7], Coordinates[6]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path7 = new google.maps.Polyline({
-        path: [Coordinates[1], Coordinates[7]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path8 = new google.maps.Polyline({
-        path: [Coordinates[1], Coordinates[8]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path9 = new google.maps.Polyline({
-        path: [Coordinates[0], Coordinates[9]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path10 = new google.maps.Polyline({
-        path: [Coordinates[9], Coordinates[10]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path11 = new google.maps.Polyline({
-        path: [Coordinates[0], Coordinates[11]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path12 = new google.maps.Polyline({
-        path: [Coordinates[0], Coordinates[12]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path13 = new google.maps.Polyline({
-        path: [Coordinates[0], Coordinates[13]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path14 = new google.maps.Polyline({
-        path: [Coordinates[0], Coordinates[14]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path15 = new google.maps.Polyline({
-        path: [Coordinates[0], Coordinates[15]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path16 = new google.maps.Polyline({
-        path: [Coordinates[14], Coordinates[16]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Aurangabad
-
-      const path17 = new google.maps.Polyline({
-        path: [Coordinates[0], Coordinates[17]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path18 = new google.maps.Polyline({
-        path: [Coordinates[17], Coordinates[18]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path19 = new google.maps.Polyline({
-        path: [Coordinates[17], Coordinates[19]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path20 = new google.maps.Polyline({
-        path: [Coordinates[17], Coordinates[20]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path21 = new google.maps.Polyline({
-        path: [Coordinates[19], Coordinates[21]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Nagpur
-
-      const path22 = new google.maps.Polyline({
-        path: [Coordinates[17], Coordinates[22]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path23 = new google.maps.Polyline({
-        path: [Coordinates[22], Coordinates[23]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Nanded
-      const path24 = new google.maps.Polyline({
-        path: [Coordinates[36], Coordinates[24]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Amravati
-      const path25 = new google.maps.Polyline({
-        path: [Coordinates[22], Coordinates[25]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Yavatmal
-      const path26 = new google.maps.Polyline({
-        path: [Coordinates[22], Coordinates[26]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Solapur
-
-      const path27 = new google.maps.Polyline({
-        path: [Coordinates[36], Coordinates[27]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Dhule
-      const path28 = new google.maps.Polyline({
-        path: [Coordinates[29], Coordinates[28]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //NAshik
-
-      const path29 = new google.maps.Polyline({
-        path: [Coordinates[0], Coordinates[29]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Ratnagiri
-
-      const path30 = new google.maps.Polyline({
-        path: [Coordinates[32], Coordinates[30]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Sindhudurg
-      const path31 = new google.maps.Polyline({
-        path: [Coordinates[35], Coordinates[31]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Satara
-
-      const path32 = new google.maps.Polyline({
-        path: [Coordinates[1], Coordinates[32]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Jalgoan
-      const path33 = new google.maps.Polyline({
-        path: [Coordinates[28], Coordinates[33]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Latur
-      const path34 = new google.maps.Polyline({
-        path: [Coordinates[36], Coordinates[34]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Kolhapur
-      const path35 = new google.maps.Polyline({
-        path: [Coordinates[32], Coordinates[35]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      // Beed
-      const path36 = new google.maps.Polyline({
-        path: [Coordinates[18], Coordinates[36]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Akola
-      const path37 = new google.maps.Polyline({
-        path: [Coordinates[25], Coordinates[37]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Chandrapur
-      const path38 = new google.maps.Polyline({
-        path: [Coordinates[22], Coordinates[38]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-      //Gadchiroli
-      const path39 = new google.maps.Polyline({
-        path: [Coordinates[22], Coordinates[39]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-      const path40 = new google.maps.Polyline({
-        path: [Coordinates[0], Coordinates[1]],
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
-      });
-
-
-    
-      path1.setMap(map);
-      path2.setMap(map);
-      path3.setMap(map);
-      path4.setMap(map);
-      path5.setMap(map);
-      path6.setMap(map);
-      path7.setMap(map);
-      path8.setMap(map);
-      path9.setMap(map);
-      path10.setMap(map);
-      path11.setMap(map);
-      path12.setMap(map);
-      path13.setMap(map);
-      path14.setMap(map);
-      path15.setMap(map);
-      path16.setMap(map);
-      path17.setMap(map);
-      path18.setMap(map);
-      path19.setMap(map);
-      path20.setMap(map);
-      path21.setMap(map);
-      path22.setMap(map);
-      path23.setMap(map);
-      path24.setMap(map);
-      path25.setMap(map);
-      path26.setMap(map);
-      path27.setMap(map);
-      path28.setMap(map);
-      path29.setMap(map);
-      path30.setMap(map);
-      path31.setMap(map);
-      path32.setMap(map);
-      path33.setMap(map);
-      path34.setMap(map);
-      path35.setMap(map);
-      path36.setMap(map);
-      path37.setMap(map);
-      path38.setMap(map);
-      path39.setMap(map);
-      path40.setMap(map);
       setState(map);
+
+      setAllStates(dummyvalues);
       
 
     });
