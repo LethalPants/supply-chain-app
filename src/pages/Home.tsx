@@ -2,7 +2,7 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonIcon } from '@
 import React, { useState, useEffect , useRef} from 'react';
 import './Home.css';
 import { Loader } from "@googlemaps/js-api-loader"
-import dummyvalues from '../constant/constant'
+import algovalues from '../constant/constant'
 
 
 
@@ -24,9 +24,9 @@ const Home: React.FC = () => {
     "</div>" +
     '<h3 id="firstHeading" class="firstHeading ion-text-center">Status</h3>' +
     '<div id="bodyContent">' +
-    '<p class="ion-text-center"><b>Demand: </b>' + demand +
+    '<p class="ion-text-center"><b>Demand: </b>' + Math.round(demand)+
     "</p>" +
-    '<p class="ion-text-center"><b>Supply: </b>' + supply +
+    '<p class="ion-text-center"><b>Supply: </b>' + Math.round(supply) +
     "</p>" +
     "</div>" +
     "</div>"; 
@@ -75,13 +75,14 @@ const Home: React.FC = () => {
 
   
   const [map2, setState] = useState<any>();
+  // let [cp, setcpState] = useState(0);
   // Similar to componentDidMount and componentDidUpdate:
   useEffect(() => {
     // Update the document title using the browser API
     loader.load().then(() => {
       const map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
         center: {lat: 18.967501304211517, lng: 72.82285520799007 },
-        zoom: 8,
+        zoom: 6,
       })
       
       // 25 coordinates for demo
@@ -173,7 +174,7 @@ const Home: React.FC = () => {
       for(let i=0;i<45;i++){
         markers.push(new google.maps.Marker({
           position: Coordinates[i],
-          icon: yellow_marker,
+          icon: red_marker,
           map: map
         }))
       };
@@ -205,7 +206,22 @@ const Home: React.FC = () => {
 
       setState(map);
 
-      setAllStates(dummyvalues);
+      
+      let cp = 0;
+      setTimeout(function(){
+        let interval = setInterval(function(){
+          setAllStates(algovalues[cp]);
+          cp+=1; 
+          if(cp == 11){
+            clearInterval(interval);
+          }
+          console.log(cp);
+          console.log("Timeout triggered");
+  
+        }, 2500);
+      }, 8000);
+      
+      
       
 
     });

@@ -24,7 +24,7 @@ const Statistics: React.FC = () => {
                             </IonCardHeader>
                             <IonCardContent>
                                 <IonText class="ion-text-center" color="danger" style={{ fontWeight: 'bold'}}>
-                                    <h1 >500</h1>
+                                    <h1 >123 231</h1>
                                 </IonText>
                             </IonCardContent>
                         </IonCard>
@@ -36,7 +36,7 @@ const Statistics: React.FC = () => {
                             </IonCardHeader>
                             <IonCardContent>
                                 <IonText class="ion-text-center" color="success" style={{ fontWeight: 'bold'}}>
-                                    <h1 >500</h1>
+                                    <h1 >34 567</h1>
                                 </IonText>
                             </IonCardContent>
                         </IonCard>
